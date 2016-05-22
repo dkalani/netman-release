@@ -47,6 +47,8 @@ sync_package runc-cni \
   -app github.com/containernetworking/cni/plugins/ipam/host-local \
   -app github.com/containernetworking/cni/plugins/meta/flannel &
 
+sync_package policy-server -app policy-server &
+
 wait
 
 GOOS=linux sync_package utils \

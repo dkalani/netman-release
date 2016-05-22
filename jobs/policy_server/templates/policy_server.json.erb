@@ -1,0 +1,7 @@
+<%=
+    require 'json'
+
+    configuration = p("netman.policy_server")
+
+    JSON.pretty_generate(configuration)
+%>

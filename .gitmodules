@@ -51,3 +51,6 @@
 [submodule "src/github.com/songgao/water"]
 	path = src/github.com/songgao/water
 	url = https://github.com/songgao/water
+[submodule "src/github.com/tedsuo/ifrit"]
+	path = src/github.com/tedsuo/ifrit
+	url = https://github.com/tedsuo/ifrit

@@ -31,6 +31,15 @@ jobs:
 - name: database_z3
   <<: (( merge ))
 
+- name: netman_policy_server
+  instances: 1
+  networks:
+  - name: diego1
+  resource_pool: database_z1
+  templates:
+  - name: policy_server
+    release: netman
+
 - name: netman_db
   instances: 1
   networks:

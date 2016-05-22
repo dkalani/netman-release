@@ -1,0 +1,5 @@
+check process policy_server
+  with pidfile /var/vcap/sys/run/policy_server/policy_server.pid
+  start program "/var/vcap/jobs/policy_server/bin/policy_server_ctl start"
+  stop program "/var/vcap/jobs/policy_server/bin/policy_server_ctl stop"
+  group vcap

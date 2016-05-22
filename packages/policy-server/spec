@@ -1,0 +1,20 @@
+---
+name: policy-server
+
+dependencies:
+  - golang
+
+files:
+  - github.com/bmizerany/pat/*.go # gosub
+  - github.com/pivotal-golang/lager/*.go # gosub
+  - github.com/tedsuo/ifrit/*.go # gosub
+  - github.com/tedsuo/ifrit/grouper/*.go # gosub
+  - github.com/tedsuo/ifrit/http_server/*.go # gosub
+  - github.com/tedsuo/ifrit/sigmon/*.go # gosub
+  - github.com/tedsuo/rata/*.go # gosub
+  - lib/marshal/*.go # gosub
+  - policy-server/*.go # gosub
+  - policy-server/config/*.go # gosub
+  - policy-server/handlers/*.go # gosub
+  - policy-server/models/*.go # gosub
+  - policy-server/store/*.go # gosub

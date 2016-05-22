@@ -1,0 +1,13 @@
+---
+name: policy_server
+templates:
+  policy_server_ctl.erb: bin/policy_server_ctl
+  policy_server.json.erb: config/policy_server.json
+
+packages:
+  - policy-server
+
+properties:
+  netman.policy_server.listen_address:
+    description: "Listen on this IP:port combo"
+    default: 0.0.0.0:8888
