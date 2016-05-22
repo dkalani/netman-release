@@ -46,4 +46,8 @@
 	url = https://github.com/codegangsta/cli
 [submodule "src/github.com/coreos/flannel"]
 	path = src/github.com/coreos/flannel
-	url = https://github.com/coreos/flannel
+	url = https://github.com/rosenhouse/flannel
+	branch = go-udp-backend
+[submodule "src/github.com/songgao/water"]
+	path = src/github.com/songgao/water
+	url = https://github.com/songgao/water

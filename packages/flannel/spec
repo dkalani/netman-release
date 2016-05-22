@@ -6,3 +6,4 @@ dependencies:
 
 files:
   - github.com/coreos/flannel/**/*
+  - github.com/songgao/water/**/*
