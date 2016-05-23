@@ -56,6 +56,25 @@ var _ = Describe("Store", func() {
 			Expect(err).NotTo(HaveOccurred())
 		})
 
+		Context("when the list of groups is nil", func() {
+			It("returns all whitelist rules, sorted by group id", func() {
+				var err error
+				whitelists, err = memStore.GetWhitelists(logger, nil)
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(whitelists).To(HaveLen(2))
+
+				Expect(whitelists[0]).To(Equal(models.IngressWhitelist{
+					Destination:    models.TaggedGroup{ID: "group0", Tag: models.PT("group0-tag")},
+					AllowedSources: nil,
+				}))
+				Expect(whitelists[1]).To(Equal(models.IngressWhitelist{
+					Destination:    models.TaggedGroup{ID: "group1", Tag: models.PT("group1-tag")},
+					AllowedSources: []models.TaggedGroup{{ID: "group0", Tag: models.PT("group0-tag")}},
+				}))
+			})
+		})
+
 		It("returns the whitelist for each requested group", func() {
 			Expect(whitelists).To(HaveLen(2))
 

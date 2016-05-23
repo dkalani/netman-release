@@ -3,6 +3,7 @@ package handlers
 import (
 	"lib/marshal"
 	"net/http"
+	"policy-server/models"
 	"strings"
 
 	"github.com/pivotal-golang/lager"
@@ -19,12 +20,19 @@ func (h *Whitelists) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	logger.Info("start")
 	defer logger.Info("done")
 
-	groups := strings.Split(req.URL.Query().Get("groups"), ",")
+	queryValue := req.URL.Query().Get("groups")
+	var groups []string
+	if strings.TrimSpace(queryValue) != "" {
+		groups = strings.Split(queryValue, ",")
+	}
 	all, err := h.Store.GetWhitelists(logger, groups)
 	if err != nil {
 		logger.Error("store-get-whitelists", err)
 		resp.WriteHeader(http.StatusInternalServerError)
 		return
+	}
+	if all == nil {
+		all = []models.IngressWhitelist{}
 	}
 
 	payload, err := h.Marshaler.Marshal(all)

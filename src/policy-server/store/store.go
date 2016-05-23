@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"policy-server/models"
+	"sort"
 	"sync"
 
 	"github.com/pivotal-golang/lager"
@@ -24,10 +25,17 @@ func NewMemoryStore(tagger Tagger) *MemoryStore {
 }
 
 func (s *MemoryStore) GetWhitelists(logger lager.Logger, groups []string) ([]models.IngressWhitelist, error) {
-	all := make([]models.IngressWhitelist, len(groups))
-
 	s.lock.Lock()
 	defer s.lock.Unlock()
+
+	if groups == nil {
+		for key := range s.tags {
+			groups = append(groups, key)
+		}
+		sort.Strings(groups)
+	}
+
+	all := make([]models.IngressWhitelist, len(groups))
 
 	for i, destGroup := range groups {
 		all[i].Destination.ID = destGroup

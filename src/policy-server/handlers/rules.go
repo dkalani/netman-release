@@ -9,6 +9,7 @@ import (
 	"github.com/pivotal-golang/lager"
 )
 
+//go:generate counterfeiter -o ../fakes/store.go --fake-name Store . store
 type store interface {
 	Add(logger lager.Logger, rule models.Rule) error
 	Delete(logger lager.Logger, rule models.Rule) error
