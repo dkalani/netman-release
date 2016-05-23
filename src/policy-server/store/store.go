@@ -42,7 +42,7 @@ func (s *MemoryStore) GetWhitelists(logger lager.Logger, groups []string) ([]mod
 		var found bool
 		all[i].Destination.Tag, found = s.tags[destGroup]
 		if !found {
-			logger.Info("no-tag-found", lager.Data{"group": destGroup})
+			logger.Info("no-tag-found", lager.Data{"destination": destGroup})
 			continue
 		}
 		for _, rule := range s.rules {
@@ -64,15 +64,15 @@ func (s *MemoryStore) Add(logger lager.Logger, rule models.Rule) error {
 	logger.Info("start")
 	defer logger.Info("done")
 
-	g1Tag, err := s.Tagger.GetTag(rule.Source)
+	sourceTag, err := s.Tagger.GetTag(rule.Source)
 	if err != nil {
-		logger.Error("get-tag", err, lager.Data{"group": rule.Source})
+		logger.Error("get-tag", err, lager.Data{"source": rule.Source})
 		return fmt.Errorf("get tag: %s", err)
 	}
 
-	g2Tag, err := s.Tagger.GetTag(rule.Destination)
+	destinationTag, err := s.Tagger.GetTag(rule.Destination)
 	if err != nil {
-		logger.Error("get-tag", err, lager.Data{"group": rule.Destination})
+		logger.Error("get-tag", err, lager.Data{"destination": rule.Destination})
 		return fmt.Errorf("get tag: %s", err)
 	}
 
@@ -80,9 +80,9 @@ func (s *MemoryStore) Add(logger lager.Logger, rule models.Rule) error {
 	defer s.lock.Unlock()
 
 	s.rules = append(s.rules, rule)
-	s.tags[rule.Source] = g1Tag
-	s.tags[rule.Destination] = g2Tag
-	logger.Info("added", lager.Data{"rule": rule, "group1-tag": g1Tag, "group2-tag": g2Tag})
+	s.tags[rule.Source] = sourceTag
+	s.tags[rule.Destination] = destinationTag
+	logger.Info("added", lager.Data{"rule": rule, "source-tag": sourceTag, "destination-tag": destinationTag})
 
 	return nil
 }

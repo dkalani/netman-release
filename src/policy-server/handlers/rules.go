@@ -53,17 +53,19 @@ type RulesAdd struct {
 	Store       store
 }
 
-func readRule(unmarshaler marshal.Unmarshaler, req *http.Request) (models.Rule, error) {
+func readRule(logger lager.Logger, unmarshaler marshal.Unmarshaler, req *http.Request) (models.Rule, error) {
 	payload, err := ioutil.ReadAll(req.Body)
 	if err != nil {
 		return models.Rule{}, err
 	}
+	logger.Info("got-payload", lager.Data{"payload": string(payload)})
 
 	var rule models.Rule
 	err = unmarshaler.Unmarshal(payload, &rule)
 	if err != nil {
 		return models.Rule{}, err
 	}
+	logger.Info("unmarshaled", lager.Data{"rule": rule})
 
 	if err := rule.Validate(); err != nil {
 		return models.Rule{}, err
@@ -76,8 +78,9 @@ func (h *RulesAdd) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	logger.Info("start")
 	defer logger.Info("done")
 
-	rule, err := readRule(h.Unmarshaler, req)
+	rule, err := readRule(logger.Session("read-rule"), h.Unmarshaler, req)
 	if err != nil {
+		logger.Error("read-rule", err)
 		resp.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -105,8 +108,9 @@ func (h *RulesDelete) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	logger.Info("start")
 	defer logger.Info("done")
 
-	rule, err := readRule(h.Unmarshaler, req)
+	rule, err := readRule(logger.Session("read-rule"), h.Unmarshaler, req)
 	if err != nil {
+		logger.Error("read-rule", err)
 		resp.WriteHeader(http.StatusBadRequest)
 		return
 	}
