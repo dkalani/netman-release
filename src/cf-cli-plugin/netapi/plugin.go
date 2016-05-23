@@ -1,12 +1,14 @@
 package netapi
 
 import (
+	"crypto/tls"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
 	"os"
 	policyClient "policy-server/client"
+	"strings"
 
 	"github.com/cloudfoundry/cli/plugin"
 	"github.com/pivotal-cf-experimental/rainmaker"
@@ -46,8 +48,20 @@ func (p *Plugin) Run(cliConnection plugin.CliConnection, args []string) {
 		traceWriter = os.Stdout
 	}
 
+	policyEndpoint := strings.Replace(apiEndpoint, "api", "network-policy", -1)
+	var httpClient = http.DefaultClient
+	if skipVerifySSL {
+		httpClient = &http.Client{
+			Transport: &http.Transport{
+				TLSClientConfig: &tls.Config{
+					InsecureSkipVerify: skipVerifySSL,
+				},
+			},
+		}
+	}
+
 	runner := &Runner{
-		Client:        policyClient.NewOuterClient("http://127.0.0.1:5555", http.DefaultClient),
+		Client:        policyClient.NewOuterClient(policyEndpoint, httpClient),
 		UserLogger:    logger,
 		CliConnection: cliConnection,
 		Rainmaker: rainmaker.NewClient(rainmaker.Config{

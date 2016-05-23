@@ -3,18 +3,19 @@
 A [garden-runc](https://github.com/cloudfoundry-incubator/garden-runc-release) add-on
 that provides container networking.
 
-## What you can do
-- [Running tests](#running-tests)
-- [Deploy and test in isolation](#deploy-and-test-in-isolation)
-- [Deploy and test with Diego](#deploy-and-test-with-diego)
+## kicking the tires on the policy server
+0. push a couple test apps if you don't already have them:
 
-## Running tests
+  ```
+  (cd src/netman-cf-acceptance/example-apps/proxy && cf push test1 && cf push test2)
 
-```bash
-docker-machine create --driver virtualbox --virtualbox-cpu-count 4 --virtualbox-memory 2048 dev-box
-eval $(docker-machine env dev-box)
-~/workspace/netman-release/scripts/docker-test
-```
+  go install cf-cli-plugin && CF_TRACE=true cf uninstall-plugin connet; cf install-plugin -f bin/cf-cli-plugin && cf plugins
+
+  cf net-allow test1 test2
+  cf net-list
+  cf net-disallow test1 test2
+  cf net-list
+  ```
 
 
 ## Deploy and test with Diego
@@ -57,3 +58,12 @@ bosh deployment bosh-lite/deployments/netman-bare.yml
 bosh -n deploy
 bosh run errand acceptance-tests
 ```
+
+## Running unit tests
+
+```bash
+docker-machine create --driver virtualbox --virtualbox-cpu-count 4 --virtualbox-memory 2048 dev-box
+eval $(docker-machine env dev-box)
+~/workspace/netman-release/scripts/docker-test
+```
+
