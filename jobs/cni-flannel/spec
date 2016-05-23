@@ -24,6 +24,13 @@ properties:
     description: "Flannel backend to use"
     default: "udpgo"
 
+  cni-flannel.flannel.Backend.LocalListenAddr:
+    description: "Local listen address for UDP backend control server"
+    default: "127.0.0.1:9022"
+
+  cni-flannel.flannel.Backend.PolicyURL:
+    description: "Base URL for internal policy server API"
+
   cni-flannel.adapter.cni_plugin_dir:
     description: "Directory containing CNI plugins"
     default: /var/vcap/packages/runc-cni/bin

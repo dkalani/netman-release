@@ -24,6 +24,9 @@ properties:
   cni-flannel:
     etcd_endpoints:
       - http://netman-db.service.cf.internal:4001
+    flannel:
+      Backend:
+        PolicyURL: http://netman-policy-server.service.cf.internal:8888
   netman:
     policy_server:
       listen_port: 8888
@@ -47,7 +50,17 @@ jobs:
     release: netman
   - name: route_registrar
     release: cf
+  - name: consul_agent
+    release: cf
   properties:
+    consul:
+      agent:
+        services:
+          netman-policy-server:
+            name: netman-policy-server
+            check:
+              interval: 5s
+              script: /bin/true
     route_registrar:
       routes:
       - name: network-policy
