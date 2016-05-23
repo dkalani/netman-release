@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"flag"
+	"fmt"
 	"lib/marshal"
 	"os"
 	"policy-server/config"
@@ -81,7 +82,8 @@ func main() {
 		logger.Fatal("create-rata-route", err)
 	}
 
-	httpServer := http_server.New(conf.ListenAddress, rataRouter)
+	listenAddr := fmt.Sprintf("%s:%d", conf.ListenIP, conf.ListenPort)
+	httpServer := http_server.New(listenAddr, rataRouter)
 
 	members := grouper.Members{
 		{"http_server", httpServer},

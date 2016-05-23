@@ -8,7 +8,8 @@ import (
 )
 
 type ServerConfig struct {
-	ListenAddress string `json:"listen_address"`
+	ListenIP   string `json:"listen_ip"`
+	ListenPort int    `json:"listen_port"`
 }
 
 func Unmarshal(input io.Reader) (*ServerConfig, error) {

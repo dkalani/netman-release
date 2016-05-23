@@ -8,6 +8,9 @@ packages:
   - policy-server
 
 properties:
-  netman.policy_server.listen_address:
-    description: "Listen on this IP:port combo"
-    default: 0.0.0.0:8888
+  netman.policy_server.listen_ip:
+    description: "Listen on this IP"
+    default: 0.0.0.0
+  netman.policy_server.listen_port:
+    description: "Listen on this port"
+    default: 8888

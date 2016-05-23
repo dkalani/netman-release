@@ -6,6 +6,7 @@ releases:
 
 properties:
   <<: (( merge ))
+  system_domain: (( merge || "bosh-lite.com" ))
   netman-cf-acceptance:
     <<: (( merge ))
     admin_password: (( merge || "admin" ))
@@ -23,6 +24,11 @@ properties:
   cni-flannel:
     etcd_endpoints:
       - http://netman-db.service.cf.internal:4001
+  netman:
+    policy_server:
+      listen_port: 8888
+  nats: (( properties.diego.route_emitter.nats ))
+
 jobs:
 - name: database_z1
   <<: (( merge ))
@@ -39,6 +45,18 @@ jobs:
   templates:
   - name: policy_server
     release: netman
+  - name: route_registrar
+    release: cf
+  properties:
+    route_registrar:
+      routes:
+      - name: network-policy
+        port: (( .properties.netman.policy_server.listen_port ))
+        registration_interval: 20s
+        tags:
+          component: network-policy
+        uris:
+        - (( "network-policy." .properties.system_domain ))
 
 - name: netman_db
   instances: 1

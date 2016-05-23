@@ -28,11 +28,14 @@ var _ = Describe("Policy server", func() {
 	)
 
 	BeforeEach(func() {
-		address = fmt.Sprintf("127.0.0.1:%d", 4001+GinkgoParallelNode())
+		ip := "127.0.0.1"
+		port := 4001 + GinkgoParallelNode()
+		address = fmt.Sprintf("127.0.0.1:%d", port)
 
 		logger = lagertest.NewTestLogger("test")
 		configFilePath = WriteConfigFile(&config.ServerConfig{
-			ListenAddress: address,
+			ListenIP:   ip,
+			ListenPort: port,
 		})
 
 		serverCmd := exec.Command(serverBinPath, "-configFile", configFilePath)
