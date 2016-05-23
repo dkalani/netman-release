@@ -3,8 +3,8 @@ package models
 import "errors"
 
 type Rule struct {
-	Source      string `json:"group1"`
-	Destination string `json:"group2"`
+	Source      string `json:"source"`
+	Destination string `json:"destination"`
 }
 
 func (r Rule) Equals(otherRule Rule) bool {
