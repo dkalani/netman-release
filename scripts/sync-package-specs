@@ -47,11 +47,11 @@ sync_package runc-cni \
   -app github.com/containernetworking/cni/plugins/ipam/host-local \
   -app github.com/containernetworking/cni/plugins/meta/flannel &
 
+GOOS=linux sync_package flannel -app github.com/coreos/flannel &
+GOOS=linux sync_package utils -app utils/netns-exec &
+
 sync_package policy-server -app policy-server &
 
 wait
-
-GOOS=linux sync_package utils \
-  -app utils/netns-exec... &
 
 git diff --name-only packages/*/spec

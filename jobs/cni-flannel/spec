@@ -46,3 +46,7 @@ properties:
   cni-flannel.adapter.log_dir:
     description: "The CNI adapter will drop logs here"
     default: /var/vcap/sys/log/cni-flannel/adapter
+
+  cni-flannel.adapter.post_result_url:
+    description: "Base URL to post result of CNI calls"
+    default: http://127.0.0.1:9022

@@ -24,5 +24,7 @@ files:
   - github.com/containernetworking/cni/vendor/github.com/coreos/go-iptables/iptables/*.go # gosub
   - github.com/containernetworking/cni/vendor/github.com/vishvananda/netlink/*.go # gosub
   - github.com/containernetworking/cni/vendor/github.com/vishvananda/netlink/nl/*.go # gosub
+  - github.com/dghubble/sling/*.go # gosub
+  - github.com/google/go-querystring/query/*.go # gosub
   - golang.org/x/sys/unix/*.go # gosub
   - golang.org/x/sys/unix/*.s # gosub
