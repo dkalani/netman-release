@@ -12,7 +12,6 @@ import (
 
 type MemoryStore struct {
 	Tagger Tagger
-	tags   map[string]*models.PacketTag
 	rules  []models.Rule
 	lock   sync.Mutex
 }
@@ -20,7 +19,6 @@ type MemoryStore struct {
 func NewMemoryStore(tagger Tagger) *MemoryStore {
 	return &MemoryStore{
 		Tagger: tagger,
-		tags:   make(map[string]*models.PacketTag),
 	}
 }
 
@@ -29,8 +27,13 @@ func (s *MemoryStore) GetWhitelists(logger lager.Logger, groups []string) ([]mod
 	defer s.lock.Unlock()
 
 	if groups == nil {
-		for key := range s.tags {
-			groups = append(groups, key)
+		groupSet := make(map[string]bool)
+		for _, rule := range s.rules {
+			groupSet[rule.Source] = true
+			groupSet[rule.Destination] = true
+		}
+		for group := range groupSet {
+			groups = append(groups, group)
 		}
 		sort.Strings(groups)
 	}
@@ -39,19 +42,24 @@ func (s *MemoryStore) GetWhitelists(logger lager.Logger, groups []string) ([]mod
 
 	for i, destGroup := range groups {
 		all[i].Destination.ID = destGroup
-		var found bool
-		all[i].Destination.Tag, found = s.tags[destGroup]
-		if !found {
-			logger.Info("no-tag-found", lager.Data{"destination": destGroup})
-			continue
+		var err error
+		all[i].Destination.Tag, err = s.Tagger.GetTag(destGroup)
+		if err != nil {
+			logger.Error("get-tag", err, lager.Data{"group": destGroup})
+			return nil, fmt.Errorf("get tag: %s", err)
 		}
 		for _, rule := range s.rules {
 			if rule.Destination != destGroup {
 				continue
 			}
+			sourceTag, err := s.Tagger.GetTag(rule.Source)
+			if err != nil {
+				logger.Error("get-tag", err, lager.Data{"group": rule.Source})
+				return nil, fmt.Errorf("get tag: %s", err)
+			}
 			all[i].AllowedSources = append(all[i].AllowedSources, models.TaggedGroup{
 				ID:  rule.Source,
-				Tag: s.tags[rule.Source],
+				Tag: sourceTag,
 			})
 		}
 	}
@@ -80,8 +88,6 @@ func (s *MemoryStore) Add(logger lager.Logger, rule models.Rule) error {
 	defer s.lock.Unlock()
 
 	s.rules = append(s.rules, rule)
-	s.tags[rule.Source] = sourceTag
-	s.tags[rule.Destination] = destinationTag
 	logger.Info("added", lager.Data{"rule": rule, "source-tag": sourceTag, "destination-tag": destinationTag})
 
 	return nil

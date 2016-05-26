@@ -39,6 +39,7 @@ sync_package acceptance \
   -test acceptance \
   -test netman-cf-acceptance \
   -app netman-cf-acceptance/example-apps/proxy \
+  -app cf-cli-plugin \
   -app github.com/onsi/ginkgo/ginkgo &
 
 sync_package runc-cni \

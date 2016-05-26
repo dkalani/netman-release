@@ -96,6 +96,23 @@ var _ = Describe("Store", func() {
 			})))
 		})
 
+		Context("when a rule is deleted", func() {
+			It("no longer reports stale tags", func() {
+				Expect(memStore.Delete(logger, models.Rule{
+					Source:      "group0",
+					Destination: "group1",
+				})).To(Succeed())
+
+				Expect(whitelists).NotTo(BeEmpty())
+
+				var err error
+				whitelists, err = memStore.GetWhitelists(logger, nil)
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(whitelists).To(BeEmpty())
+			})
+		})
+
 		Context("when the group is unknown", func() {
 			BeforeEach(func() {
 				var err error
@@ -103,12 +120,12 @@ var _ = Describe("Store", func() {
 				Expect(err).NotTo(HaveOccurred())
 			})
 
-			It("should return an empty record and not error", func() {
+			It("should compute a tag and not error", func() {
 				Expect(whitelists[0].Destination.ID).To(Equal("group1"))
 				Expect(*whitelists[0].Destination.Tag).To(BeEquivalentTo([]byte("group1-tag")))
 
 				Expect(whitelists[1].Destination.ID).To(Equal("some-other-group"))
-				Expect(whitelists[1].Destination.Tag).To(BeNil())
+				Expect(whitelists[1].Destination.Tag).To(Equal(models.PT("some-other-group-tag")))
 
 				Expect(whitelists[2].Destination.ID).To(Equal("group0"))
 				Expect(*whitelists[2].Destination.Tag).To(BeEquivalentTo([]byte("group0-tag")))

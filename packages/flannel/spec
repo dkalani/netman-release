@@ -61,6 +61,10 @@ files:
   - github.com/coreos/flannel/remote/*.go # gosub
   - github.com/coreos/flannel/subnet/*.go # gosub
   - github.com/coreos/flannel/version/*.go # gosub
+  - github.com/dghubble/sling/*.go # gosub
+  - github.com/google/go-querystring/query/*.go # gosub
   - github.com/pivotal-golang/lager/*.go # gosub
   - github.com/songgao/water/*.go # gosub
   - github.com/songgao/water/waterutil/*.go # gosub
+  - policy-server/client/*.go # gosub
+  - policy-server/models/*.go # gosub

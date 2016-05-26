@@ -9,7 +9,7 @@
 [submodule "src/github.com/cloudfoundry-incubator/guardian-cni-adapter"]
 	path = src/github.com/cloudfoundry-incubator/guardian-cni-adapter
 	url = https://github.com/cloudfoundry-incubator/guardian-cni-adapter
-	branch = master
+	branch = spike-gbp
 [submodule "src/github.com/cloudfoundry-incubator/garden"]
 	path = src/github.com/cloudfoundry-incubator/garden
 	url = https://github.com/cloudfoundry-incubator/garden/

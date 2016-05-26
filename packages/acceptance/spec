@@ -7,6 +7,8 @@ dependencies:
 files:
   - netman-cf-acceptance/example-apps/proxy/manifest.yml # HANDCRAFTED
   - acceptance/*.go # gosub
+  - cf-cli-plugin/*.go # gosub
+  - cf-cli-plugin/netapi/*.go # gosub
   - github.com/bmizerany/pat/*.go # gosub
   - github.com/cloudfoundry-incubator/cf-test-helpers/cf/*.go # gosub
   - github.com/cloudfoundry-incubator/cf-test-helpers/helpers/*.go # gosub
@@ -16,6 +18,10 @@ files:
   - github.com/cloudfoundry-incubator/garden/client/connection/*.go # gosub
   - github.com/cloudfoundry-incubator/garden/routes/*.go # gosub
   - github.com/cloudfoundry-incubator/garden/transport/*.go # gosub
+  - github.com/cloudfoundry/cli/plugin/*.go # gosub
+  - github.com/cloudfoundry/cli/plugin/models/*.go # gosub
+  - github.com/dghubble/sling/*.go # gosub
+  - github.com/google/go-querystring/query/*.go # gosub
   - github.com/onsi/ginkgo/*.go # gosub
   - github.com/onsi/ginkgo/config/*.go # gosub
   - github.com/onsi/ginkgo/ginkgo/*.go # gosub
@@ -52,7 +58,12 @@ files:
   - github.com/onsi/gomega/matchers/support/goraph/node/*.go # gosub
   - github.com/onsi/gomega/matchers/support/goraph/util/*.go # gosub
   - github.com/onsi/gomega/types/*.go # gosub
+  - github.com/pivotal-cf-experimental/rainmaker/*.go # gosub
+  - github.com/pivotal-cf-experimental/rainmaker/internal/documents/*.go # gosub
+  - github.com/pivotal-cf-experimental/rainmaker/internal/network/*.go # gosub
   - github.com/pivotal-golang/lager/*.go # gosub
   - github.com/tedsuo/rata/*.go # gosub
   - netman-cf-acceptance/*.go # gosub
   - netman-cf-acceptance/example-apps/proxy/*.go # gosub
+  - policy-server/client/*.go # gosub
+  - policy-server/models/*.go # gosub

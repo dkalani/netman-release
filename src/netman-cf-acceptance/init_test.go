@@ -26,7 +26,7 @@ func TestAcceptance(t *testing.T) {
 
 	BeforeSuite(func() {
 		config = helpers.LoadConfig()
-
+		Expect(cf.Cf("install-plugin", "-f", "bin/cf-cli-plugin").Wait(Timeout_Short)).To(gexec.Exit(0))
 		Expect(cf.Cf("api", "--skip-ssl-validation", config.ApiEndpoint).Wait(Timeout_Push)).To(gexec.Exit(0))
 
 		cmd := exec.Command("cf", "auth", config.AdminUser, config.AdminPassword)

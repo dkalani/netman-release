@@ -40,7 +40,8 @@ func main() {
 	marshaler := marshal.MarshalFunc(json.Marshal)
 	unmarshaler := marshal.UnmarshalFunc(json.Unmarshal)
 
-	packetTagger, err := store.NewMemoryTagger(4)
+	const tagLength = 4
+	packetTagger, err := store.NewMemoryTagger(tagLength)
 	if err != nil {
 		logger.Error("packet tag", err)
 		os.Exit(1)

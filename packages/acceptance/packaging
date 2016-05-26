@@ -12,4 +12,5 @@ go install github.com/onsi/ginkgo/ginkgo
 
 cd ${BOSH_INSTALL_TARGET}/src/acceptance
 
+go install cf-cli-plugin
 go test -c -o ${BOSH_INSTALL_TARGET}/bin/acceptance-tests
