@@ -4,29 +4,30 @@ A [garden-runc](https://github.com/cloudfoundry-incubator/garden-runc-release) a
 that provides container networking.
 
 ## kicking the tires on the policy server
-0. push a couple test apps if you don't already have them:
+here's [a demo](https://drive.google.com/file/d/0Bx9k3GiR0tm6QUxsS2d1V2lfbnc/view?usp=sharing).
 
-  ```
-  (cd src/netman-cf-acceptance/example-apps/proxy && cf push test1 & cf scale test1 -i 2 && cf push test2 && cf scale test2 -i 2)
-  test1_ip=$(cf ssh test1 -c "ip addr" | grep "10.255" | awk '{print $2}' | cut -d '/' -f1)
-  test2_ip=$(cf ssh test2 -c "ip addr" | grep "10.255" | awk '{print $2}' | cut -d '/' -f1)
-  echo "check that $test1_ip and $test2_ip are in different /24 subnets: we're not yet enforcing policy for intra-cell traffic"
+To follow along yourself:
+```
+(cd src/netman-cf-acceptance/example-apps/proxy && cf push test1 & cf scale test1 -i 2 && cf push test2 && cf scale test2 -i 2)
+test1_ip=$(cf ssh test1 -c "ip addr" | grep "10.255" | awk '{print $2}' | cut -d '/' -f1)
+test2_ip=$(cf ssh test2 -c "ip addr" | grep "10.255" | awk '{print $2}' | cut -d '/' -f1)
+echo "check that $test1_ip and $test2_ip are in different /24 subnets: we're not yet enforcing policy for intra-cell traffic"
 
-  cf ssh test1 -c "ping -c 1 $test2_ip"  # this should fail
+cf ssh test1 -c "ping -c 1 $test2_ip"  # this should fail
 
-  go install cf-cli-plugin && CF_TRACE=true cf uninstall-plugin connet; cf install-plugin -f bin/cf-cli-plugin && cf plugins
+go install cf-cli-plugin && CF_TRACE=true cf uninstall-plugin connet; cf install-plugin -f bin/cf-cli-plugin && cf plugins
 
-  cf net-allow test1 test2
-  cf net-allow test2 test1
-  cf net-list
+cf net-allow test1 test2
+cf net-allow test2 test1
+cf net-list
 
-  cf ssh test1 -c "ping -c 1 $test2_ip"  # this should succeed
+cf ssh test1 -c "ping -c 1 $test2_ip"  # this should succeed
 
-  cf net-disallow test1 test2
-  cf net-list
+cf net-disallow test1 test2
+cf net-list
 
-  cf ssh test1 -c "ping -c 1 $test2_ip"  # this should fail again
-  ```
+cf ssh test1 -c "ping -c 1 $test2_ip"  # this should fail again
+```
 
 
 ## Deploy and test with Diego
