@@ -1,13 +1,21 @@
 package uaa_client
 
 import (
-	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 )
+
+type BadUaaResponse struct {
+	StatusCode      int
+	UaaResponseBody string
+}
+
+func (r BadUaaResponse) Error() string {
+	return fmt.Sprintf("bad uaa response: %d: %s", r.StatusCode, r.UaaResponseBody)
+}
 
 type Client struct {
 	Host       string
@@ -27,8 +35,8 @@ type CheckTokenResponse struct {
 }
 
 func (c *Client) GetName(token string) (string, error) {
-	reqURL := fmt.Sprintf("%s/check_token", c.Host)
-	request, err := http.NewRequest("POST", reqURL, bytes.NewBuffer([]byte(fmt.Sprintf("token=%s", token))))
+	reqURL := fmt.Sprintf("%s/check_token?token=%s", c.Host, token)
+	request, err := http.NewRequest("GET", reqURL, nil)
 	request.SetBasicAuth(c.Name, c.Secret)
 
 	resp, err := c.HTTPClient.Do(request)
@@ -40,6 +48,14 @@ func (c *Client) GetName(token string) (string, error) {
 	respBytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return "", fmt.Errorf("read body: %s", err)
+	}
+
+	if resp.StatusCode != 200 {
+		err = BadUaaResponse{
+			StatusCode:      resp.StatusCode,
+			UaaResponseBody: string(respBytes),
+		}
+		return "", err
 	}
 
 	responseStruct := CheckTokenResponse{}

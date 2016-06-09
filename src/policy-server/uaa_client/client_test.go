@@ -30,7 +30,8 @@ var _ = Describe("Client", func() {
 				HTTPClient: httpClient,
 			}
 			returnedResponse = &http.Response{
-				Body: ioutil.NopCloser(strings.NewReader(`{"scope":["network.admin"], "user_name":"some-user"}`)),
+				StatusCode: 200,
+				Body:       ioutil.NopCloser(strings.NewReader(`{"scope":["network.admin"], "user_name":"some-user"}`)),
 			}
 			httpClient.DoReturns(returnedResponse, nil)
 		})
@@ -40,45 +41,15 @@ var _ = Describe("Client", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			receivedRequest := httpClient.DoArgsForCall(0)
-			receivedBody, err := ioutil.ReadAll(receivedRequest.Body)
-			Expect(err).NotTo(HaveOccurred())
-			Expect(receivedRequest.Method).To(Equal("POST"))
-			Expect(receivedBody).To(ContainSubstring("token=valid-token"))
+			Expect(receivedRequest.Method).To(Equal("GET"))
+			Expect(receivedRequest.Body).To(BeNil())
+			Expect(receivedRequest.FormValue("token")).To(Equal("valid-token"))
 
 			authHeader := receivedRequest.Header["Authorization"]
 			Expect(authHeader).To(HaveLen(1))
 			Expect(authHeader[0]).To(Equal("Basic dGVzdDp0ZXN0"))
 
 			Expect(userName).To(Equal("some-user"))
-		})
-
-		Context("when the response does not have the network.admin scope", func() {
-			BeforeEach(func() {
-				returnedResponse = &http.Response{
-					Body: ioutil.NopCloser(strings.NewReader(`{"scope":["wrong.scope"], "user_name":"some-user"}`)),
-				}
-				httpClient.DoReturns(returnedResponse, nil)
-			})
-			It("returns a helpful error", func() {
-				_, err := client.GetName("valid-token")
-
-				Expect(err).To(MatchError("network.admin scope not found"))
-			})
-		})
-		Context("when the response body is not valid json", func() {
-
-			BeforeEach(func() {
-				returnedResponse = &http.Response{
-					Body: ioutil.NopCloser(strings.NewReader(`%%%%`)),
-				}
-				httpClient.DoReturns(returnedResponse, nil)
-			})
-
-			It("returns a helpful error", func() {
-				_, err := client.GetName("valid-token")
-
-				Expect(err).To(MatchError(ContainSubstring("unmarshal json: invalid character")))
-			})
 		})
 
 		Context("when the http client returns an error", func() {
@@ -94,6 +65,25 @@ var _ = Describe("Client", func() {
 			})
 		})
 
+		Context("if the response status code is not 200", func() {
+			BeforeEach(func() {
+				httpClient.DoReturns(&http.Response{
+					StatusCode: 418,
+					Body:       ioutil.NopCloser(strings.NewReader("bad thing")),
+				}, nil)
+				client.HTTPClient = httpClient
+			})
+
+			It("returns the response body in the error", func() {
+				_, err := client.GetName("something")
+
+				Expect(err).To(Equal(uaa_client.BadUaaResponse{
+					StatusCode:      418,
+					UaaResponseBody: "bad thing",
+				}))
+			})
+		})
+
 		Context("when reading the body returns an error", func() {
 			BeforeEach(func() {
 				httpClient.DoReturns(&http.Response{Body: &testsupport.BadReader{}}, nil)
@@ -104,6 +94,37 @@ var _ = Describe("Client", func() {
 				_, err := client.GetName("valid-token")
 
 				Expect(err).To(MatchError(ContainSubstring("read body: banana")))
+			})
+		})
+
+		Context("when the response body is not valid json", func() {
+			BeforeEach(func() {
+				returnedResponse = &http.Response{
+					StatusCode: 200,
+					Body:       ioutil.NopCloser(strings.NewReader(`%%%%`)),
+				}
+				httpClient.DoReturns(returnedResponse, nil)
+			})
+
+			It("returns a helpful error", func() {
+				_, err := client.GetName("valid-token")
+
+				Expect(err).To(MatchError(ContainSubstring("unmarshal json: invalid character")))
+			})
+		})
+
+		Context("when the response does not have the network.admin scope", func() {
+			BeforeEach(func() {
+				returnedResponse = &http.Response{
+					StatusCode: 200,
+					Body:       ioutil.NopCloser(strings.NewReader(`{"scope":["wrong.scope"], "user_name":"some-user"}`)),
+				}
+				httpClient.DoReturns(returnedResponse, nil)
+			})
+			It("returns a helpful error", func() {
+				_, err := client.GetName("valid-token")
+
+				Expect(err).To(MatchError("network.admin scope not found"))
 			})
 		})
 	})
